@@ -1,0 +1,9 @@
+Flask==0.12
+flask-heroku==0.1.9
+Flask-SQLAlchemy==2.2
+geopy==1.11.0
+gunicorn==19.7.0
+Jinja2==2.9.5
+psycopg2==2.7.1
+py2app==0.7.3
+SQLAlchemy==1.1.8

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html ng-app>
+	<head>
+		<title>GlassHouse</title>
+		<link href="{{ url_for('static', filename='css/bootstrap.min.css') }}" rel="stylesheet">
+                <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" >
+               
+	</head>
+        <body>
+                <div id="loading"></div>
+
+                <div id="map"></div>
+                <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBCM0RSFsQXpJS77047LwjZkEktrmaFG6A&callback=initMap"></script>
+
+                <div id="navbar">
+                        <a href="https://app.swaggerhub.com/api/blu25/GlassHouse/1.0.0" target="_blank">
+                            <label type="button" id="apiButton" class="btn btn-default">API</label>
+                        </a>
+
+                        <label type="button" onclick="toggleCard('accountCard')" class="btn btn-default glyphicon glyphicon-user"></label>
+                        
+                        <label type="button" id="favoritesButton" onClick="toggleFavorites()" class="btn btn-default glyphicon glyphicon-star-empty"></label>
+
+                        <label type="button" id="favoritesButton" onClick="toggleCard('searchCard')" class="btn btn-default glyphicon glyphicon-search"></label>
+
+                        <!-- <input type="text" class="form-control" id="search" placeholder="Search houses..."> -->
+                </div>
+
+                <div class="panel card" id="searchCard">
+                        <input type="text" class="form-control" id="search" placeholder="Search...">
+                        <br>
+                        <input id="pricerange" type="range" ng-model="priceVal" min="0" max="4000" value="2000" id="fader">
+                        <p id="pricerangetext">Max Price: ${{ '{{priceVal}}' }}</p>
+
+                        <br>
+                        <input id="peoplerange" type="range" ng-model="peopleVal" min="1" max="8" value="3" id="fader">
+                        <p id="peoplerangetext">People: {{'{{peopleVal}}'}}</p>
+                </div>
+
+                <div class="panel card" id="accountCard">
+                        {% if not session.logged_in %}
+                        {% if error %}
+                                <script>window.setTimeout(function(){toggleCard("accountCard");}, 500);</script>
+                                <p>Invalid login or password.</p>
+                        {% endif %}
+                                <form action="{{ url_for('login') }}" method=post>
+                                        <input type="text" name="username" class="form-control" id="search" placeholder="Username">
+                                        <input type="password" name="password" class="form-control" id="search" placeholder="Password">
+                                        <input type=submit class="btn btn-default" value="Log In">
+                                <input type="button" class="btn btn-default" value="Create account" onclick="toggleCard('makeAccount')">
+                                </form>
+                        {% else %}
+                                <script>window.setTimeout(function(){toggleCard("accountCard");}, 500);</script>
+                                <input type="button" class="btn btn-default" value="Add House" onclick="toggleCard('addCard')">
+                                <br><br><a href="{{ url_for('logout') }}">Log Out</a>
+                        {% endif %}
+                </div>
+
+                  <div class="panel card" id="makeAccount">
+                    <form action=" {{ url_for('add_user') }}" method=post class=add-user>
+                        <input type="text" name="email" class="form-control" id="search" placeholder="Email address">
+                        <input type="text" name="studentid" class="form-control" id="search" placeholder="Student ID">
+                        <input type="text" name="username" class="form-control" id="search" placeholder="Username">
+                        <input type="password" name="password" class="form-control" id="search" placeholder="Password">
+                        <input type=submit class="btn btn-default" value="Create Account">
+                    </form>
+                </div>
+
+                {% if session.logged_in %}
+                <div class="panel card" id="addCard">
+                        This is the add card!
+                        <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+                                <dl>
+                                <dt>House Address:
+                                <dd><input type="text" class="form-control" size=50 name=address>
+                                <dt>Monthly Price:
+                                <dd><input type="integer" class="form-control" size=10 name=rent>
+                                <dd><input type=submit class="btn btn-default" value="Add House">
+                                </dl>
+                        </form>
+                </div>
+                {% endif %}
+
+
+            <div class="panel card" id="houseCard">
+                <h5 id="hAddress">123 College Avenue</h5>
+                <p id="hRent">$3200 per month</p>
+            </div>
+
+
+
+
+             <script src="{{ url_for('static', filename='js/angular.min.js') }}"></script>
+                <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+            <script>
+                function addStuffs() {
+                {% for entry in entries %}
+                    addMarker({{ entry.y_coord }}, {{ entry.x_coord }}, {{ entry.id }});
+                {% endfor %}
+                }
+            </script>
+
+
+                
+        </body>
+
+</html>
